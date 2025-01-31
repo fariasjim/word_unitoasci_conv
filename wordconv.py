@@ -23,7 +23,7 @@ def replace_and_highlight(doc_path, save_path):
                     converted_text = unicode_converter.convertUnicodeToBijoy(run.text)
                     if run.text != converted_text:
                         run.text = converted_text
-                        run.font.highlight_color = WD_COLOR_INDEX.BLUE  # BLUE highlight
+                        run.font.highlight_color = WD_COLOR_INDEX.LIGHT_BLUE  # BLUE highlight
     
     for table in doc.tables:
         for row in table.rows:
@@ -36,7 +36,7 @@ def replace_and_highlight(doc_path, save_path):
                                 converted_text = unicode_converter.convertUnicodeToBijoy(run.text)
                                 if run.text != converted_text:
                                     run.text = converted_text
-                                    run.font.highlight_color = WD_COLOR_INDEX.BLUE  # BLUE highlight
+                                    run.font.highlight_color = WD_COLOR_INDEX.LIGHT_BLUE  # BLUE highlight
     
     # Save the document
     doc.save(save_path)
