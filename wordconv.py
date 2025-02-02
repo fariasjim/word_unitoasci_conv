@@ -4,6 +4,8 @@ from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 import converter  # Import the converter module
 import re
+global replaced_runs
+replaced_runs=[]
 
 def contains_unicode(text):
     # Check if the text contains Unicode characters
@@ -23,7 +25,8 @@ def replace_and_highlight(doc_path, save_path):
                     converted_text = unicode_converter.convertUnicodeToBijoy(run.text)
                     if run.text != converted_text:
                         run.text = converted_text
-                        run.font.highlight_color = WD_COLOR_INDEX.LIGHT_BLUE  # BLUE highlight
+                        run.font.highlight_color = WD_COLOR_INDEX.TURQUOISE  # BLUE highlight
+                        replaced_runs.append(run)
     
     for table in doc.tables:
         for row in table.rows:
@@ -36,7 +39,11 @@ def replace_and_highlight(doc_path, save_path):
                                 converted_text = unicode_converter.convertUnicodeToBijoy(run.text)
                                 if run.text != converted_text:
                                     run.text = converted_text
-                                    run.font.highlight_color = WD_COLOR_INDEX.LIGHT_BLUE  # BLUE highlight
+                                    run.font.highlight_color = WD_COLOR_INDEX.TURQUOISE  # BLUE highlight
+                                    replaced_runs.append(run)
+
+    for run in replaced_runs:
+        run.font.name = "SutonnyMJ"
     
     # Save the document
     doc.save(save_path)
@@ -105,3 +112,5 @@ custom_text = "Document converted successfully. This script was been compiled by
 
 # Show the information dialog box
 show_info_dialog(custom_text)
+
+print(replaced_runs)
