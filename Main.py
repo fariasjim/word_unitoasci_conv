@@ -1,5 +1,53 @@
 import customtkinter
 from PIL import Image, ImageTk
+from tkinter import filedialog, messagebox
+import os
+import convertion_logic  # Import the wordconv module
+
+global file_path
+global save_path
+file_path = None
+save_path = None
+
+class code():
+    def open_path_code():
+        global file_path
+        global save_path
+        try:
+            file_path = filedialog.askopenfilename(filetypes=[("Word Files", "*.docx")])
+            if file_path:
+                save_path = os.path.dirname(file_path)  # Set save path to the same directory as the file
+            else:
+                messagebox.showerror("Error", "No file selected")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")    
+    
+    def save_path_code():
+        global save_path
+        try:
+            save_path = filedialog.asksaveasfilename(filetypes=[("Word Files", "*.docx")])
+            if save_path:
+                pass
+            else:
+                messagebox.showerror("Error", "No Directory selected")
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+    
+    def convert():
+        global checkboxvalue
+        global file_path
+        global save_path
+        if checkboxvalue.get()==1:
+            save_path = file_path
+        
+        try:
+            convertion_logic.replace_and_highlight(file_path, save_path)
+            messagebox.showinfo("Success", "File converted successfully")
+            os.startfile(save_path)  # Open the file
+        except Exception as e:
+            messagebox.showerror("Error", f"An error occurred: {str(e)}")
+    
+
 
 class imageframe(customtkinter.CTkFrame):
     def __init__(self, master=None):
@@ -16,9 +64,45 @@ class imageframe(customtkinter.CTkFrame):
 class frame1(customtkinter.CTkFrame):
     def __init__(self, master=None):
         super().__init__(master)
+
+        ##Checkbox value
+        global checkboxvalue
+        checkboxvalue = customtkinter.IntVar(value=1)
+
         self.master = master
         self.grid(row=0, column=0, sticky="nsew")
-        self.create_widgets()
+        self.label = customtkinter.CTkLabel(self, text="Select a File to Open", font=("Arial", 26, "bold"))
+        self.label.grid(row=0, column=0, padx=20, pady=20)
+
+        self.label2 = customtkinter.CTkLabel(self, text="Open Path", font=("Arial",20,"bold"))
+        self.label2.grid(row=1, column=0, padx=20, sticky="w")
+
+        self.button1 = customtkinter.CTkButton(self, text="Browse", command= code.open_path_code, corner_radius=20, hover= True, hover_color="gray")
+        self.button1.grid(row=1, column=0, pady=5, sticky="e")
+
+        self.label3 = customtkinter.CTkLabel(self, text="Save Path", font=("Arial",20,"bold"))
+        self.label3.grid(row=2, column=0, padx=20, sticky="w")
+
+        self.button2 = customtkinter.CTkButton(self, text="Browse", command= code.save_path_code, corner_radius=20, hover= True, hover_color="gray")
+        self.button2.grid(row=2, column=0, pady=5, sticky="e")  
+
+        self.checkbox1 = customtkinter.CTkSwitch(self, text="Overwrite same file", variable=checkboxvalue, font=("Arial",20,"bold"))
+        self.checkbox1.grid(row=3, column=0, padx=20, pady=5, sticky="w")
+
+        self.conv_button = customtkinter.CTkButton(self, text="CONVERT", font=("Bahnschrift SemiBold Condensed", 30), corner_radius=20, hover= True, hover_color="green", command=code.convert)
+        self.conv_button.grid(row=4, column=0, pady=20)
+
+        self.toggle = self.ThemeToggle(master = self, command=None)
+        self.toggle.place(relx=1.0, rely=1.0, anchor="se")
+
+        self.label = customtkinter.CTkLabel(self, text="Select Theme:")
+        self.label.place(relx=1.0, rely=0.95, anchor="se")
+    
+    def refresh_entry1(self):
+        global file_path
+        print (file_path)
+        self.entry1.delete(0, "end")
+        self.entry1.insert(0, file_path)
 
     class ThemeToggle(customtkinter.CTkFrame):
         def __init__(self, master, command=None, **kwargs):
@@ -57,36 +141,7 @@ class frame1(customtkinter.CTkFrame):
             else:
                 self.button.place(x=end, y=3)
 
-    def create_widgets(self):
-        self.label = customtkinter.CTkLabel(self, text="Select a File to Open", font=("Arial", 26, "bold"))
-        self.label.grid(row=0, column=0, padx=20, pady=20)
 
-        self.label2 = customtkinter.CTkLabel(self, text="Open Path", font=("Arial",20,"bold"))
-        self.label2.grid(row=1, column=0, padx=20, sticky="w")
-
-        self.entry1 = customtkinter.CTkEntry(self, placeholder_text="Select a File", width=200)
-        self.entry1.grid(row=2, column=0, padx= 5, pady=5, sticky="w")
-
-        self.button1 = customtkinter.CTkButton(self, text="Browse", command=lambda: self.entry1.insert(0, "File Selected"), corner_radius=20, hover= True, hover_color="gray")
-        self.button1.grid(row=2, column=0, pady=5, sticky="e")
-
-        self.label3 = customtkinter.CTkLabel(self, text="Save Path", font=("Arial",20,"bold"))
-        self.label3.grid(row=3, column=0, padx=20, sticky="w")
-
-        self.entry2 = customtkinter.CTkEntry(self, placeholder_text="Select a File", width=200)
-        self.entry2.grid(row=4, column=0, padx= 5, pady=5, sticky="w")
-
-        self.button2 = customtkinter.CTkButton(self, text="Browse", command=lambda: self.entry2.insert(0, "File Selected"), corner_radius=20, hover= True, hover_color="gray")
-        self.button2.grid(row=4, column=0, pady=5, sticky="e")  
-
-        self.conv_button = customtkinter.CTkButton(self, text="CONVERT", font=("Bahnschrift SemiBold Condensed", 30), corner_radius=20, hover= True, hover_color="green")
-        self.conv_button.grid(row=5, column=0, pady=20)
-
-        self.toggle = self.ThemeToggle(master = self, command=None)
-        self.toggle.place(relx=1.0, rely=1.0, anchor="se")
-
-        self.label = customtkinter.CTkLabel(self, text="Select Theme:")
-        self.label.place(relx=1.0, rely=0.95, anchor="se")
 
 
 
